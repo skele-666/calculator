@@ -1,0 +1,51 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-size: 16px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.calculator {
+    margin: 100px auto;
+    width: 350px;
+    height: 500px;
+    background-color: rgba(105, 105, 226, 0.5);
+    border-radius: 20px;
+    border: 2px solid black;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    gap: 20px;
+}
+
+.display {
+    height: 100px;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+.display input {
+    display: block;
+    width: 90%;
+    height: 60%;
+    margin-left: 15px;
+    border: 2px solid red;
+    background-color: white;
+    font-size: 3rem;
+    border-radius: 10px;
+}
+
+.buttons .clear-del {
+    display: flex;
+    justify-content: space-between;
+}
+
+.buttons .clear-del button {
+    /* ... */
+}
