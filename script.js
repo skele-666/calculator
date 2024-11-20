@@ -20,8 +20,6 @@ const sumDisplay = document.querySelector('.sum');
 let operator = null;  // The variable that will change based on what button is clicked and impact the operate() function
 let currentNumber = '';
 let numberArray = []; // What will store all the numbers for an equation
-let result = '';
-
 
 // Event listeners
 const numberButtons = document.querySelectorAll('.number');
@@ -35,22 +33,30 @@ numberButtons.forEach(button => {
 const operators = document.querySelectorAll('.operator');
 operators.forEach(button => {
     button.addEventListener('click', (e) => {
-        operator = e.target.id;
-        operate(operator, numberArray);
+        if (currentNumber) {
+            numberArray.push(Number(currentNumber));
+            currentNumber = '';
+        }
+
+        if (operator && numberArray.length === 2) {
+            operate(operator);
+        }
+
+        operator = e.target.id; // Set the new operator
     });
 });
 
 const equals = document.getElementById('equals');
 equals.addEventListener('click', () => {
     if (currentNumber) {
-        numberArray.push(Number(currentNumber)); // Push current number to array
-        currentNumber = ''; // Clear current number
+        numberArray.push(Number(currentNumber));
+        currentNumber = '';
     }
-    operate(operator, numberArray);
-    
-    // Reset for the next calculation
-    operator = null;
-    numberArray = [result];
+    if (operator && numberArray.length === 2) {
+        operate(operator);
+    }
+
+    operator = null; // Reset operator after equals
 });
 
 // Functions
@@ -61,7 +67,7 @@ function clear() {
     sumDisplay.textContent = result;
 }
 
-function operate(op, arr) {
+/* function operate(op, arr) {
     // If currentNumber is not empty, add it to the array
     if (currentNumber) {
         arr.push(Number(currentNumber));
@@ -98,8 +104,44 @@ function operate(op, arr) {
     if (!Number.isInteger(result)) {
         result = parseFloat(result.toFixed(3));
     }
-
+    
     sumDisplay.textContent = result;
+} */
+
+function operate(op) {
+    // Push the current number to the array if it's not empty
+    if (currentNumber) {
+        numberArray.push(Number(currentNumber));
+        currentNumber = '';
+    }
+
+    // If there's already an operator and two numbers, calculate the result
+    if (numberArray.length === 2) {
+        let result;
+        if (operator === 'add') {
+            result = add(numberArray[0], numberArray[1]);
+        } else if (operator === 'sub') {
+            result = subtract(numberArray[0], numberArray[1]);
+        } else if (operator === 'mul') {
+            result = multiply(numberArray[0], numberArray[1]);
+        } else if (operator === 'div') {
+            if (numberArray[1] === 0) {
+                alert('Division by zero is not allowed');
+                clear();
+                return;
+            }
+            result = divide(numberArray[0], numberArray[1]);
+        }
+
+        //  Shorten decimal numbers
+        if (!Number.isInteger(result)) {
+            result = parseFloat(result.toFixed(3));
+        }        
+
+        // Update the display and reset for the next operation
+        sumDisplay.textContent = result;
+        numberArray = [result]; // Use the result as the first number for the next operation
+    }
 }
 
 // Clear calculator
