@@ -1,100 +1,107 @@
-// Math Operator Functions
-function add(...numbers) {
-    return numbers.reduce((sum, num) => sum + num, 0);
+// Operator functions
+function add(a, b) {
+    return a + b;
 }
 
-function subtract(...numbers) {
-    return numbers.reduce((sum, num) => sum - num);
+function subtract(a, b) {
+    return a - b;
 }
 
-function multiply(...numbers) {
-    return numbers.reduce((sum, num) => sum * num);
+function multiply(a, b) {
+    return a * b;
 }
 
-function divide(...numbers) {
-    return numbers.reduce((sum, num) => sum / num);
+function divide(a, b) {
+    return a / b;
 }
 
 // Calc display variables
 const sumDisplay = document.querySelector('.sum');
-let currentInput = '';
-let num1 = null;
-let num2 = null;
 let operator = null;  // The variable that will change based on what button is clicked and impact the operate() function
-let displayNumbers = [];
+let currentNumber = '';
+let numberArray = []; // What will store all the numbers for an equation
+let result;
 
 
 // Event listeners
 const numberButtons = document.querySelectorAll('.number');
 numberButtons.forEach(button => {
     button.addEventListener('click', (e) => {
-        displayNumbers.push(e.target.id);
-        console.log(displayNumbers);
-        makeCalcWork(displayNumbers);
+        currentNumber += e.target.id;
+        console.log(currentNumber);
+        sumDisplay.textContent = currentNumber;
     });
 });
-
-/* Array.from(operators).forEach(button => {
-    button.addEventListener('click', (e) => {
-        if (e.target.id === 'add') operator = 'add';
-        if (e.target.id === 'sub') operator = 'subtract';
-        if (e.target.id === 'mul') operator = 'multiply';
-        if (e.target.id === 'div') operator = 'divide';
-
-        operate(operator, num1, num2);
-    });
-}); */
 
 const operators = document.querySelectorAll('.operator');
 operators.forEach(button => {
     button.addEventListener('click', (e) => {
         operator = e.target.id;
+        operate(operator, numberArray);
     });
 });
 
-function operate(op, ...numbers) {
-    let result;
-    if (op === 'add') {
-        result = add(...numbers);
-    } else if (op === 'subtract') {
-        result = subtract(...numbers);
-    } else if (op === 'multiply') {
-        result = multiply(...numbers);
-    } else if (op === 'divide') {
-        divide(...numbers);
+const equals = document.getElementById('equals');
+equals.addEventListener('click', () => {
+    operate(operator, numberArray);
+    if (result !== undefined) {
+        sumDisplay.textContent = result;
+        // Reset current number, operator and array for the next calculation
+        currentNumber = result; // Keep result for the next calculation
+        operator = null;
+        numberArray = []; // Clear array
+    }
+});
+
+function clear() {
+    result = '';
+    currentNumber = '';
+    numberArray = [];
+    sumDisplay.textContent = result;
+    console.log(currentNumber);
+}
+
+function operate(op, arr) {
+    // Initialize result with the first number
+    result = numberArray[0];
+
+    // Add the current number to the array
+    arr.push(Number(currentNumber));
+    currentNumber = '';
+
+    // If there are fewer than 2 numbers, we can't perform an operation
+    if (arr.length < 2) {
+        return;
     }
 
+    // Iterate through the array and apply the operation
+    for (let i = 1; i < arr.length; i++) {
+        if (op === 'add') {
+            result = add(result, arr[i]);
+        } else if (op === 'sub') {
+            result = subtract(result, arr[i]);
+        } else if (op === 'mul') {
+            result = multiply(result, arr[i]);
+        } else if (op === 'div') {
+            if (arr[i] === 0) {
+                alert('AAH AAH YOU BROKE MATHS AAAAAAAAAAAAAAH');
+                clear();
+                return;
+            }
+            result = divide(result, arr[i]);
+        }
+    }
+
+    // Handle decimal precision if needed
+    if (!Number.isInteger(result)) {
+        result = parseFloat(result.toFixed(3));
+    }
+
+    // Display the result and reset the number array
     sumDisplay.textContent = result;
-    return result;
+    numberArray = [result]; // Reset array to only contain the current result
 }
 
-
-// uhh make it work baby
-let lastElement;
-let secondLastElement
-function makeCalcWork(arr) {
-    // Access the last element
-    lastElement = arr[arr.length - 1];
-    // Access the second last element (if exists)
-    secondLastElement = arr.length > 1 ? arr[arr.length - 2] : undefined;
-    console.log(lastElement);
-    console.log(secondLastElement);
-
-    sumDisplay.textContent = lastElement;
-
-
-    // Check if the last element is an operator
-
-}
-
-
-// makeCalcWork(displayNumbers);
-
-// Clear button
+// Clear calculator
 const clearBtn = document.getElementById('clear');
-clearBtn.addEventListener('click', (e) => {
-    result = 0;
-    displayNumbers = [];
-    sumDisplay.textContent = result;
-    return result;
-});
+clearBtn.addEventListener('click', clear);
